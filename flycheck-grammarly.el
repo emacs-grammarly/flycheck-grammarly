@@ -1,11 +1,11 @@
-;;; flycheck-grammarly.el ---   -*- lexical-binding: t; -*-
+;;; flycheck-grammarly.el --- Grammarly support for Flycheck.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Shen, Jen-Chieh
 ;; Created date 2019-11-06 18:08:01
 
 ;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
-;; Description:
-;; Keyword:
+;; Description: Grammarly support for Flycheck.
+;; Keyword: grammar check
 ;; Version: 0.0.1
 ;; Package-Requires: ((emacs "24.3") (flycheck "0.14"))
 ;; URL: https://github.com/jcs090218/flycheck-grammarly
@@ -27,7 +27,7 @@
 
 ;;; Commentary:
 ;;
-;;
+;; Grammarly support for Flycheck.
 ;;
 
 ;;; Code:
