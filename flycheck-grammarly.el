@@ -33,6 +33,7 @@
 ;;; Code:
 
 (require 'flycheck)
+(require 'grammarly)
 
 
 (defgroup flycheck-grammarly nil
@@ -42,40 +43,10 @@
   :link '(url-link :tag "Github" "https://github.com/jcs090218/flycheck-grammarly"))
 
 
-(defvar-local flycheck-grammarly--cookie ""
-  "Record the cookie down.")
-
-
-(defun flycheck-grammarly--get-cookie ()
-  "Get cookie."
-  (request
-   "https://grammarly.com/"
-   :type "GET"
-   :success
-   (cl-function
-    (lambda (&key response  &allow-other-keys)
-      (setq flycheck-grammarly--cookie "")  ; Reset to clean string.
-      (let* ((raw-headers (request-response--raw-header response))
-             (cookies (split-string raw-headers "Set-Cookie: "))
-             (index 1))
-        (while (< index (length cookies))
-          (setq flycheck-grammarly--cookie
-                (concat flycheck-grammarly--cookie
-                        (nth 0 (split-string (nth index cookies) " ")) " "))
-          (setq index (1+ index))))))
-   :error
-   ;; NOTE: Accept, error.
-   (cl-function
-    (lambda (&rest args &key _error-thrown &allow-other-keys)
-      (user-error "[ERROR] Error while getting cookie")))))
-
 ;;;###autoload
 (defun flycheck-grammarly-setup ()
   "Setup Grammarly integration for Flycheck."
-  (flycheck-grammarly--get-cookie)
   )
-
-(flycheck-grammarly-setup)
 
 
 (provide 'flycheck-grammarly)
