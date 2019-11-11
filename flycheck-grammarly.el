@@ -7,7 +7,7 @@
 ;; Description: Grammarly support for Flycheck.
 ;; Keyword: grammar check
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "24.4") (flycheck "0.14") (grammarly "0.0.1") (s "1.12.0"))
+;; Package-Requires: ((emacs "24.4") (flycheck "0.14") (grammarly "0.0.1") (cl-lib "0.6") (s "1.12.0"))
 ;; URL: https://github.com/jcs090218/flycheck-grammarly
 
 ;; This file is NOT part of GNU Emacs.
@@ -32,8 +32,10 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 's)
 (require 'json)
+(require 'dom)
 
 (require 'flycheck)
 (require 'grammarly)
@@ -45,20 +47,15 @@
   :group 'flycheck
   :link '(url-link :tag "Github" "https://github.com/jcs090218/flycheck-grammarly"))
 
-(defconst flycheck-grammarly--point-attributes
-  '("point" "title" "details" "explanation" "examples" "todo" "category"
-    "highlightBegin" "highlightEnd")
-  "List of that will be used to get information.")
-
-(defconst flycheck-grammarly--score-attributes
-  '("score" "Engagement" "GeneralScore" "Tone" "Correctness" "Clarity" "generalScore")
-  "List of that will be used to get information.")
 
 (defvar-local flycheck-grammarly--done-checking nil
   "Check if Grammarly API done checking.")
 
 (defvar-local flycheck-grammarly--point-data '()
   "List of error/warning JSON data.")
+
+(defvar-local flycheck-grammarly--last-buffer-string nil
+  "Record the last buffer string.")
 
 
 (defun flycheck-grammarly--column-at-pos (&optional pt)
@@ -68,9 +65,14 @@
     (goto-char pt)
     (current-column)))
 
+
+(defun flycheck-grammarly--on-open ()
+  "On open Grammarly API."
+  )
+
 (defun flycheck-grammarly--on-message (data)
   "Received DATA from Grammarly API."
-  (message "[DATA] %s" data)
+  (message "[INFO] Receiving data from grammarly (%s)" (length flycheck-grammarly--point-data))
   (when (string-match-p "\"point\":" data)
     (push data flycheck-grammarly--point-data)))
 
@@ -79,14 +81,42 @@
   (setq flycheck-grammarly--done-checking t)
   (flycheck-mode 1))
 
+(defun flycheck-grammarly--limit-changes-buffer (str)
+  "Minify the STR to check if any text changed."
+  (with-temp-buffer
+    (insert str)
+    (delete-whitespace-rectangle (point-min) (point-max))
+    (call-interactively #'mark-whole-buffer)
+    (goto-char (point-min))
+    (while (search-forward "\n" nil t) (replace-match "" nil t))
+    (buffer-string)))
+
 (defun flycheck-grammarly--after-change-functions (&rest _)
-  "After change function to check if content changes."
-  (setq flycheck-grammarly--done-checking nil))
+  "After change function to check if content change."
+  (unless (string=
+           (flycheck-grammarly--limit-changes-buffer flycheck-grammarly--last-buffer-string)
+           (flycheck-grammarly--limit-changes-buffer (buffer-string)))
+    (setq flycheck-grammarly--last-buffer-string (buffer-string))
+    (setq flycheck-grammarly--done-checking nil)))
+
+(defun flycheck-grammarly--encode-char (char-code)
+  "Turn CHAR-CODE to character string."
+  (cl-case char-code
+    (4194208 (cons " " 2))
+    (4194201 (cons "'" 3))
+    (t nil)))
 
 (defun flycheck-grammarly--html-to-text (html)
   "Turn HTML to text."
   (with-temp-buffer
     (insert html)
+    (goto-char (point-min))
+    (while (not (jcs-is-end-of-buffer-p))
+      (let ((replace-data (flycheck-grammarly--encode-char (char-before))))
+        (when replace-data
+          (backward-delete-char (cdr replace-data))
+          (insert (car replace-data))))
+      (forward-char 1))
     (dom-texts (libxml-parse-html-region (point-min) (point-max)))))
 
 (defun flycheck-grammarly--grab-info (data attr)
@@ -111,10 +141,7 @@
              (col (flycheck-grammarly--column-at-pos (1+ pt)))
              (desc (flycheck-grammarly--html-to-text
                     (flycheck-grammarly--grab-info data "explanation"))))
-        (message "exp: %s" (flycheck-grammarly--grab-info data "explanation"))
-        (message "desc: %s" desc)
         (setq desc (flycheck-grammarly--valid-description desc))
-        (message "valid desc: %s" desc)
         (push (list ln col type desc) check-list)))
     check-list))
 
@@ -123,6 +150,7 @@
   (add-hook 'after-change-functions 'flycheck-grammarly--after-change-functions nil t)
   (unless flycheck-grammarly--done-checking
     (progn  ; Reset point data to empty list.
+      (setq flycheck-grammarly--last-buffer-string (buffer-string))
       (setq flycheck-grammarly--point-data '()))
     (grammarly-check-text (buffer-string)))
   (funcall
@@ -146,6 +174,7 @@
   :modes '(text-mode latex-mode org-mode markdown-mode))
 
 (add-to-list 'flycheck-checkers 'grammarly-checker)
+(add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
 (add-to-list 'grammarly-on-message-function-list 'flycheck-grammarly--on-message)
 (add-to-list 'grammarly-on-close-function-list 'flycheck-grammarly--on-close)
 
