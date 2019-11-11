@@ -6,6 +6,13 @@
 > Grammarly support for Flycheck.
 
 
+## Todo List
+
+- [ ] Strip only text data, if other data like `# header` `> quote` will 
+return nothing.
+- [ ] Usable but not fast enough, really depends on Grammarlly's analyzer.
+
+
 ## Contribution
 
 If you would like to contribute to this project, you may either
