@@ -48,6 +48,12 @@
   :link '(url-link :tag "Github" "https://github.com/jcs090218/flycheck-grammarly"))
 
 
+(defcustom flycheck-grammarly-check-time 0.5
+  "How long do we call request after we done typing."
+  :type 'float
+  :group 'flycheck-grammarly)
+
+
 (defvar-local flycheck-grammarly--done-checking nil
   "Check if Grammarly API done checking.")
 
@@ -56,6 +62,9 @@
 
 (defvar-local flycheck-grammarly--last-buffer-string nil
   "Record the last buffer string.")
+
+(defvar-local flycheck-grammarly--request-timer nil
+  "Timer that will tell to do the request.")
 
 
 (defun flycheck-grammarly--column-at-pos (&optional pt)
@@ -72,7 +81,7 @@
 
 (defun flycheck-grammarly--on-message (data)
   "Received DATA from Grammarly API."
-  (message "[INFO] Receiving data from grammarly (%s)" (length flycheck-grammarly--point-data))
+  (message "[INFO] Receiving data from grammarly, level (%s)" (length flycheck-grammarly--point-data))
   (when (string-match-p "\"point\":" data)
     (push data flycheck-grammarly--point-data)))
 
@@ -91,13 +100,28 @@
     (while (search-forward "\n" nil t) (replace-match "" nil t))
     (buffer-string)))
 
+(defun flycheck-grammarly--kill-timer ()
+  "Kill the timer."
+  (when (timerp flycheck-grammarly--request-timer)
+    (cancel-timer flycheck-grammarly--request-timer)
+    (setq flycheck-grammarly--request-timer nil)))
+
+(defun flycheck-grammarly--reset-request ()
+  "Reset some variables so the next time the user done typing can reuse."
+  (message "[INFO] Reset!")
+  (setq flycheck-grammarly--last-buffer-string (buffer-string))
+  (setq flycheck-grammarly--point-data '())
+  (setq flycheck-grammarly--done-checking nil))
+
 (defun flycheck-grammarly--after-change-functions (&rest _)
   "After change function to check if content change."
   (unless (string=
            (flycheck-grammarly--limit-changes-buffer flycheck-grammarly--last-buffer-string)
            (flycheck-grammarly--limit-changes-buffer (buffer-string)))
-    (setq flycheck-grammarly--last-buffer-string (buffer-string))
-    (setq flycheck-grammarly--done-checking nil)))
+    (flycheck-grammarly--kill-timer)
+    (setq flycheck-grammarly--request-timer
+          (run-with-timer flycheck-grammarly-check-time nil
+                          'flycheck-grammarly--reset-request))))
 
 (defun flycheck-grammarly--encode-char (char-code)
   "Turn CHAR-CODE to character string."
@@ -149,9 +173,7 @@
   "Flycheck start function for CHECKER, invoking CALLBACK."
   (add-hook 'after-change-functions 'flycheck-grammarly--after-change-functions nil t)
   (unless flycheck-grammarly--done-checking
-    (progn  ; Reset point data to empty list.
-      (setq flycheck-grammarly--last-buffer-string (buffer-string))
-      (setq flycheck-grammarly--point-data '()))
+    (flycheck-grammarly--reset-request)
     (grammarly-check-text (buffer-string)))
   (funcall
    callback
