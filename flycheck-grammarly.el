@@ -48,7 +48,7 @@
   :link '(url-link :tag "Github" "https://github.com/jcs090218/flycheck-grammarly"))
 
 
-(defcustom flycheck-grammarly-check-time 0.5
+(defcustom flycheck-grammarly-check-time 0.8
   "How long do we call request after we done typing."
   :type 'float
   :group 'flycheck-grammarly)
