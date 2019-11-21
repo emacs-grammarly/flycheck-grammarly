@@ -171,7 +171,7 @@
 
 (defun flycheck-grammarly--start (checker callback)
   "Flycheck start function for CHECKER, invoking CALLBACK."
-  (add-hook 'after-change-functions 'flycheck-grammarly--after-change-functions nil t)
+  (add-hook 'after-change-functions #'flycheck-grammarly--after-change-functions nil t)
   (unless flycheck-grammarly--done-checking
     (flycheck-grammarly--reset-request)
     (grammarly-check-text (buffer-string)))
