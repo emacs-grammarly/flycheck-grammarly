@@ -1,4 +1,4 @@
-;;; flycheck-grammarly.el --- Grammarly support for Flycheck.  -*- lexical-binding: t; -*-
+;;; flycheck-grammarly.el --- Grammarly support for Flycheck  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Shen, Jen-Chieh
 ;; Created date 2019-11-06 18:08:01
