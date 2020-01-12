@@ -7,7 +7,7 @@
 ;; Description: Grammarly support for Flycheck.
 ;; Keyword: grammar check
 ;; Version: 0.1.2
-;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.0.1") (cl-lib "0.6") (s "1.12.0"))
+;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.0.1") (cl-lib "0.6"))
 ;; URL: https://github.com/jcs090218/flycheck-grammarly
 
 ;; This file is NOT part of GNU Emacs.
@@ -33,7 +33,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 's)
 (require 'json)
 (require 'dom)
 
@@ -77,18 +76,21 @@
 
 (defun flycheck-grammarly--on-open ()
   "On open Grammarly API."
-  (message "[INFO] Start connecting to Grammarly API..."))
+  (when flycheck-mode
+    (message "[INFO] Start connecting to Grammarly API...")))
 
 (defun flycheck-grammarly--on-message (data)
   "Received DATA from Grammarly API."
-  (message "[INFO] Receiving data from grammarly, level (%s)" (length flycheck-grammarly--point-data))
-  (when (string-match-p "\"point\":" data)
-    (push data flycheck-grammarly--point-data)))
+  (when flycheck-mode
+    (message "[INFO] Receiving data from grammarly, level (%s)" (length flycheck-grammarly--point-data))
+    (when (string-match-p "\"point\":" data)
+      (push data flycheck-grammarly--point-data))))
 
 (defun flycheck-grammarly--on-close ()
-  "On closse Grammarly API."
-  (setq flycheck-grammarly--done-checking t)
-  (flycheck-mode 1))
+  "On close Grammarly API."
+  (when flycheck-mode
+    (setq flycheck-grammarly--done-checking t)
+    (flycheck-mode 1)))
 
 (defun flycheck-grammarly--limit-changes-buffer (str)
   "Minify the STR to check if any text changed."
@@ -135,7 +137,7 @@
   (with-temp-buffer
     (insert html)
     (goto-char (point-min))
-    (while (not (jcs-is-end-of-buffer-p))
+    (while (not (= (point) (point-max)))
       (let ((replace-data (flycheck-grammarly--encode-char (char-before))))
         (when replace-data
           (backward-delete-char (cdr replace-data))
@@ -153,10 +155,10 @@
 
 (defun flycheck-grammarly--valid-description (desc)
   "Convert to valid description DESC."
-  (s-replace "\n" "" desc))
+  (replace-regexp-in-string "\n" "" desc))
 
 (defun flycheck-grammarly--check-all ()
-  "Check grammar for BUF document."
+  "Check grammar for buffer document."
   (let ((check-list '()))
     (dolist (data flycheck-grammarly--point-data)
       (let* ((type (if (string-match-p "error" data) 'error 'warning))
