@@ -53,6 +53,9 @@
   :group 'flycheck-grammarly)
 
 
+(defvar flycheck-grammarly--show-debug-message nil
+  "Show the debug message from this package.")
+
 (defvar-local flycheck-grammarly--done-checking nil
   "Check if Grammarly API done checking.")
 
@@ -73,16 +76,20 @@
     (goto-char pt)
     (current-column)))
 
+(defun flycheck-grammarly--debug-message (fmt &rest args)
+  "Debug message like function `message' with same argument FMT and ARGS."
+  (when flycheck-grammarly--show-debug-message
+    (apply 'message fmt args)))
 
 (defun flycheck-grammarly--on-open ()
   "On open Grammarly API."
   (when flycheck-mode
-    (message "[INFO] Start connecting to Grammarly API...")))
+    (flycheck-grammarly--debug-message "[INFO] Start connecting to Grammarly API...")))
 
 (defun flycheck-grammarly--on-message (data)
   "Received DATA from Grammarly API."
   (when flycheck-mode
-    (message "[INFO] Receiving data from grammarly, level (%s)" (length flycheck-grammarly--point-data))
+    (flycheck-grammarly--debug-message "[INFO] Receiving data from grammarly, level (%s)" (length flycheck-grammarly--point-data))
     (when (string-match-p "\"point\":" data)
       (push data flycheck-grammarly--point-data))))
 
@@ -110,7 +117,7 @@
 
 (defun flycheck-grammarly--reset-request ()
   "Reset some variables so the next time the user done typing can reuse."
-  (message "[INFO] Reset!")
+  (flycheck-grammarly--debug-message "[INFO] Reset grammarly requests!")
   (setq flycheck-grammarly--last-buffer-string (buffer-string))
   (setq flycheck-grammarly--point-data '())
   (setq flycheck-grammarly--done-checking nil))
