@@ -6,7 +6,7 @@
 ;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; Description: Grammarly support for Flycheck.
 ;; Keyword: grammar check
-;; Version: 0.1.3
+;; Version: 0.1.4
 ;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.0.1") (cl-lib "0.6"))
 ;; URL: https://github.com/jcs090218/flycheck-grammarly
 
