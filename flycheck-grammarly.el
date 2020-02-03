@@ -197,7 +197,7 @@
 (flycheck-define-generic-checker 'grammarly-checker
   "Grammarly flycheck definition."
   :start #'flycheck-grammarly--start
-  :modes '(text-mode))
+  :modes '(text-mode latex-mode org-mode markdown-mode))
 
 (add-to-list 'flycheck-checkers 'grammarly-checker)
 (add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
