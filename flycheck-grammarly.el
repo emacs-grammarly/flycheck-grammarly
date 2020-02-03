@@ -65,9 +65,18 @@
 (defvar-local flycheck-grammarly--last-buffer-string nil
   "Record the last buffer string.")
 
+(defvar-local flycheck-grammarly--checking-buffer nil
+  "Record the current checking buffer.")
+
 (defvar-local flycheck-grammarly--request-timer nil
   "Timer that will tell to do the request.")
 
+
+(defun flycheck-grammarly--get-check-buffer-string ()
+  "Return the current checking buffer's content."
+  (when (bufferp flycheck-grammarly--checking-buffer)
+    (with-current-buffer flycheck-grammarly--checking-buffer
+      (buffer-string))))
 
 (defun flycheck-grammarly--column-at-pos (&optional pt)
   "Column at PT."
@@ -101,8 +110,9 @@
 
 (defun flycheck-grammarly--minified-string (str)
   "Minify the STR to check if any text changed."
-  (declare (side-effect-free t))
-  (md5 (replace-regexp-in-string "[[:space:]\n]+" " " str)))
+  (when (stringp str)
+    (declare (side-effect-free t))
+    (md5 (replace-regexp-in-string "[[:space:]\n]+" " " str))))
 
 (defun flycheck-grammarly--kill-timer ()
   "Kill the timer."
@@ -112,20 +122,20 @@
 
 (defun flycheck-grammarly--reset-request ()
   "Reset some variables so the next time the user done typing can reuse."
-  (flycheck-grammarly--debug-message "[INFO] Reset grammarly requests!")
-  (setq flycheck-grammarly--last-buffer-string (buffer-string))
-  (setq flycheck-grammarly--point-data '())
-  (setq flycheck-grammarly--done-checking nil))
-
-(defun flycheck-grammarly--after-change-functions (&rest _)
-  "After change function to check if content change."
   (unless (string=
            (flycheck-grammarly--minified-string flycheck-grammarly--last-buffer-string)
-           (flycheck-grammarly--minified-string (buffer-string)))
+           (flycheck-grammarly--minified-string (flycheck-grammarly--get-check-buffer-string)))
+    (flycheck-grammarly--debug-message "[INFO] Reset grammarly requests!")
     (flycheck-grammarly--kill-timer)
-    (setq flycheck-grammarly--request-timer
-          (run-with-timer flycheck-grammarly-check-time nil
-                          'flycheck-grammarly--reset-request))))
+    (setq flycheck-grammarly--last-buffer-string (flycheck-grammarly--get-check-buffer-string))
+    (setq flycheck-grammarly--point-data '())
+    (setq flycheck-grammarly--done-checking nil)))
+
+(defun flycheck-grammarly--setup-timer ()
+  "After change function to check if content change."
+  (setq flycheck-grammarly--request-timer
+        (run-with-idle-timer flycheck-grammarly-check-time t
+                             'flycheck-grammarly--reset-request)))
 
 (defun flycheck-grammarly--encode-char (char-code)
   "Turn CHAR-CODE to character string."
@@ -175,10 +185,11 @@
 
 (defun flycheck-grammarly--start (checker callback)
   "Flycheck start function for CHECKER, invoking CALLBACK."
-  (add-hook 'after-change-functions #'flycheck-grammarly--after-change-functions nil t)
+  (setq flycheck-grammarly--checking-buffer (current-buffer))
   (unless flycheck-grammarly--done-checking
     (flycheck-grammarly--reset-request)
-    (grammarly-check-text (buffer-string)))
+    (grammarly-check-text (flycheck-grammarly--get-check-buffer-string)))
+  (flycheck-grammarly--setup-timer)
   (funcall
    callback
    'finished
