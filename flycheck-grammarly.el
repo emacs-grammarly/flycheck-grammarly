@@ -99,15 +99,10 @@
     (setq flycheck-grammarly--done-checking t)
     (flycheck-mode 1)))
 
-(defun flycheck-grammarly--limit-changes-buffer (str)
+(defun flycheck-grammarly--minified-string (str)
   "Minify the STR to check if any text changed."
-  (with-temp-buffer
-    (insert str)
-    (delete-whitespace-rectangle (point-min) (point-max))
-    (call-interactively #'mark-whole-buffer)
-    (goto-char (point-min))
-    (while (search-forward "\n" nil t) (replace-match "" nil t))
-    (buffer-string)))
+  (declare (side-effect-free t))
+  (md5 (replace-regexp-in-string "[[:space:]\n]+" " " str)))
 
 (defun flycheck-grammarly--kill-timer ()
   "Kill the timer."
@@ -125,8 +120,8 @@
 (defun flycheck-grammarly--after-change-functions (&rest _)
   "After change function to check if content change."
   (unless (string=
-           (flycheck-grammarly--limit-changes-buffer flycheck-grammarly--last-buffer-string)
-           (flycheck-grammarly--limit-changes-buffer (buffer-string)))
+           (flycheck-grammarly--minified-string flycheck-grammarly--last-buffer-string)
+           (flycheck-grammarly--minified-string (buffer-string)))
     (flycheck-grammarly--kill-timer)
     (setq flycheck-grammarly--request-timer
           (run-with-timer flycheck-grammarly-check-time nil
