@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.com/jcs090218/flycheck-grammarly.svg?branch=master)](https://travis-ci.com/jcs090218/flycheck-grammarly)
+[![MELPA](https://melpa.org/packages/flycheck-grammarly-badge.svg)](https://melpa.org/#/flycheck-grammarly)
+[![MELPA Stable](https://stable.melpa.org/packages/flycheck-grammarly-badge.svg)](https://stable.melpa.org/#/flycheck-grammarly)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
