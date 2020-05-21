@@ -3,10 +3,16 @@
 [![MELPA Stable](https://stable.melpa.org/packages/flycheck-grammarly-badge.svg)](https://stable.melpa.org/#/flycheck-grammarly)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+![](screenshot.png)
 
 # flycheck-grammarly
 > Grammarly support for Flycheck.
 
+# Get started
+
+    (require 'grammarly)
+    (require 'flycheck-grammarly)
+    (add-hook 'markdown-mode-hook 'flyspell-grammarly)
 
 ## Todo List
 
