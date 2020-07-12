@@ -3,23 +3,16 @@
 [![MELPA Stable](https://stable.melpa.org/packages/flycheck-grammarly-badge.svg)](https://stable.melpa.org/#/flycheck-grammarly)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+![](screenshot.png)
+
 # flycheck-grammarly
 > Grammarly support for Flycheck.
 
-## Usage
+# Get started
 
-To enable this package, simply add loading to your config like the code below.
-
-```el
-(require 'flycheck-grammarly)
-```
-
-If you encounter the performance issue, try raise `flycheck-grammarly-check-time` higher.
-The request will be send by this time everytime the buffer has changed.
-
-```el
-(setq flycheck-grammarly-check-time 0.8)
-```
+    (require 'grammarly)
+    (require 'flycheck-grammarly)
+    (add-hook 'markdown-mode-hook 'flyspell-grammarly)
 
 ## Todo List
 
