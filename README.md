@@ -16,10 +16,8 @@
 
 ## Todo List
 
-- [ ] Strip only text data, if other data like `# header` or `> quote` will 
-return nothing.
+- [ ] Strip only text data, if other data like `# header` or `> quote` will return nothing.
 - [ ] Usable but not fast enough, really depends on Grammarly's analyzer.
-
 
 ## Contribution
 
