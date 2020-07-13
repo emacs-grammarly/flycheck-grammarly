@@ -6,7 +6,7 @@
 # flycheck-grammarly
 > Grammarly support for Flycheck.
 
-<p>
+<p align="center">
   <img src="./etc/screenshot.png" width="656" height="238"/>
 <p>
 
