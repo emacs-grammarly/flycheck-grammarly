@@ -7,7 +7,7 @@
 > Grammarly support for Flycheck.
 
 <p>
-  <img src="./etc/transwin.png" width="656" height="238"/>
+  <img src="./etc/screenshot.png" width="656" height="238"/>
 <p>
 
 ## Usage
