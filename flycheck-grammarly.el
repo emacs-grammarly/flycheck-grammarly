@@ -39,19 +39,16 @@
 (require 'flycheck)
 (require 'grammarly)
 
-
 (defgroup flycheck-grammarly nil
   "Grammarly support for Flycheck."
   :prefix "flycheck-grammarly-"
   :group 'flycheck
   :link '(url-link :tag "Github" "https://github.com/jcs090218/flycheck-grammarly"))
 
-
 (defcustom flycheck-grammarly-check-time 0.8
   "How long do we call request after we done typing."
   :type 'float
   :group 'flycheck-grammarly)
-
 
 (defvar flycheck-grammarly--show-debug-message nil
   "Show the debug message from this package.")
@@ -68,13 +65,10 @@
 (defvar-local flycheck-grammarly--request-timer nil
   "Timer that will tell to do the request.")
 
-
 (defun flycheck-grammarly--column-at-pos (&optional pt)
   "Column at PT."
   (unless pt (setq pt (point)))
-  (save-excursion
-    (goto-char pt)
-    (current-column)))
+  (save-excursion (goto-char pt) (current-column)))
 
 (defun flycheck-grammarly--debug-message (fmt &rest args)
   "Debug message like function `message' with same argument FMT and ARGS."
@@ -203,7 +197,6 @@
 (add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
 (add-to-list 'grammarly-on-message-function-list 'flycheck-grammarly--on-message)
 (add-to-list 'grammarly-on-close-function-list 'flycheck-grammarly--on-close)
-
 
 (provide 'flycheck-grammarly)
 ;;; flycheck-grammarly.el ends here
