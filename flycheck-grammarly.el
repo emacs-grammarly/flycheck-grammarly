@@ -8,7 +8,7 @@
 ;; Keyword: grammar check
 ;; Version: 0.1.4
 ;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.0.1") (cl-lib "0.6"))
-;; URL: https://github.com/jcs090218/flycheck-grammarly
+;; URL: https://github.com/jcs-elpa/flycheck-grammarly
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -43,7 +43,7 @@
   "Grammarly support for Flycheck."
   :prefix "flycheck-grammarly-"
   :group 'flycheck
-  :link '(url-link :tag "Github" "https://github.com/jcs090218/flycheck-grammarly"))
+  :link '(url-link :tag "Github" "https://github.com/jcs-elpa/flycheck-grammarly"))
 
 (defcustom flycheck-grammarly-check-time 0.8
   "How long do we call request after we done typing."
