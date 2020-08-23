@@ -7,7 +7,7 @@
 ;; Description: Grammarly support for Flycheck.
 ;; Keyword: grammar check
 ;; Version: 0.1.5
-;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.0.1"))
+;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.1.0"))
 ;; URL: https://github.com/jcs-elpa/flycheck-grammarly
 
 ;; This file is NOT part of GNU Emacs.
