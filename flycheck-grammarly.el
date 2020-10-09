@@ -83,8 +83,10 @@
 (defun flycheck-grammarly--on-message (data)
   "Received DATA from Grammarly API."
   (when flycheck-mode
-    (flycheck-grammarly--debug-message "[INFO] Receiving data from grammarly, level (%s)" (length flycheck-grammarly--point-data))
-    (when (string-match-p "\"point\":" data)
+    (flycheck-grammarly--debug-message
+     "[INFO] Receiving data from grammarly, level (%s) : %s"
+     (length flycheck-grammarly--point-data) data)
+    (when (string-match-p "\"highlightBegin\":" data)
       (push data flycheck-grammarly--point-data))))
 
 (defun flycheck-grammarly--on-close ()
@@ -143,26 +145,33 @@
 
 (defun flycheck-grammarly--grab-info (data attr)
   "Grab value through ATTR key with DATA."
-  (let* ((json-object-type 'hash-table)
+  (let* ((attrs (split-string attr " "))
+         (json-object-type 'hash-table)
          (json-array-type 'list)
          (json-key-type 'string)
-         (json (json-read-from-string data)))
-    (gethash attr json)))
+         (target-val (json-read-from-string data)))
+    (while (< 0 (length attrs))
+      (setq target-val (gethash (nth 0 attrs) target-val))
+      (pop attrs))
+    target-val))
 
 (defun flycheck-grammarly--valid-description (desc)
-  "Convert to valid description DESC."
-  (replace-regexp-in-string "\n" "" desc))
+  "Convert DESC to valid description."
+  (setq desc (replace-regexp-in-string "\n" "" desc)
+        desc (replace-regexp-in-string "[ ]+" " " desc))
+  desc)
 
 (defun flycheck-grammarly--check-all ()
   "Check grammar for buffer document."
   (let ((check-list '()))
     (dolist (data flycheck-grammarly--point-data)
-      (let* ((type (if (string-match-p "error" data) 'error 'warning))
-             (pt (flycheck-grammarly--grab-info data "highlightBegin"))
+      (let* ((pt (flycheck-grammarly--grab-info data "highlightBegin"))
              (ln (line-number-at-pos (1+ pt)))
              (col (flycheck-grammarly--column-at-pos (1+ pt)))
-             (desc (flycheck-grammarly--html-to-text
-                    (flycheck-grammarly--grab-info data "explanation"))))
+             (exp (flycheck-grammarly--grab-info data "explanation"))
+             (card-desc (unless exp (flycheck-grammarly--grab-info data "cardLayout groupDescription")))
+             (desc (flycheck-grammarly--html-to-text (or exp card-desc "")))
+             (type (if exp (if (string-match-p "error" data) 'error 'warning) 'info)))
         (setq desc (flycheck-grammarly--valid-description desc))
         (push (list ln col type desc) check-list)))
     check-list))
