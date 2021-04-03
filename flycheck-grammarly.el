@@ -43,7 +43,13 @@
   "Grammarly support for Flycheck."
   :prefix "flycheck-grammarly-"
   :group 'flycheck
-  :link '(url-link :tag "Github" "https://github.com/jcs-elpa/flycheck-grammarly"))
+  :link '(url-link :tag "Github" "https://github.com/emacs-grammarly/flycheck-grammarly"))
+
+(defcustom flycheck-grammarly-active-modes
+  '(text-mode latex-mode org-mode markdown-mode)
+  "List of major mode that work with Grammarly."
+  :type 'list
+  :group 'flycheck-grammarly)
 
 (defcustom flycheck-grammarly-check-time 0.8
   "How long do we call request after we done typing."
@@ -203,7 +209,7 @@
 (flycheck-define-generic-checker 'grammarly-checker
   "Grammarly flycheck definition."
   :start #'flycheck-grammarly--start
-  :modes '(text-mode latex-mode org-mode markdown-mode))
+  :modes flycheck-grammarly-active-modes)
 
 (add-to-list 'flycheck-checkers 'grammarly-checker)
 (add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
