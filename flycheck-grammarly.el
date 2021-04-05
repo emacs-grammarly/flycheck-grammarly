@@ -99,7 +99,7 @@
   "On close Grammarly API."
   (when flycheck-mode
     (setq flycheck-grammarly--done-checking t)
-    (flycheck-mode 1)))
+    (flycheck-buffer-automatically)))
 
 (defun flycheck-grammarly--minified-string (str)
   "Minify the STR to check if any text changed."
@@ -192,8 +192,7 @@
     (flycheck-grammarly--reset-request)
     (grammarly-check-text (buffer-string)))
   (funcall
-   callback
-   'finished
+   callback 'finished
    (flycheck-increment-error-columns
     (mapcar
      (lambda (x)
@@ -202,16 +201,15 @@
          (if flycheck-grammarly--done-checking
              (flycheck-grammarly--check-all)
            (flycheck-stop))
-       (error
-        (funcall callback 'errored (error-message-string err))
-        (signal (car err) (cdr err))))))))
+       (error (funcall callback 'errored (error-message-string err))
+              (signal (car err) (cdr err))))))))
 
-(flycheck-define-generic-checker 'grammarly-checker
+(flycheck-define-generic-checker 'grammarly
   "Grammarly flycheck definition."
   :start #'flycheck-grammarly--start
   :modes flycheck-grammarly-active-modes)
 
-(add-to-list 'flycheck-checkers 'grammarly-checker)
+(add-to-list 'flycheck-checkers 'grammarly)
 (add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
 (add-to-list 'grammarly-on-message-function-list 'flycheck-grammarly--on-message)
 (add-to-list 'grammarly-on-close-function-list 'flycheck-grammarly--on-close)
