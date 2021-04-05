@@ -185,12 +185,16 @@
               check-list)))
     check-list))
 
+(defun flycheck-grammarly--grammar-check ()
+  "Grammar check once."
+  (unless flycheck-grammarly--done-checking
+    (flycheck-grammarly--reset-request)
+    (grammarly-check-text (buffer-string))))
+
 (defun flycheck-grammarly--start (checker callback)
   "Flycheck start function for CHECKER, invoking CALLBACK."
   (add-hook 'after-change-functions #'flycheck-grammarly--after-change-functions nil t)
-  (unless flycheck-grammarly--done-checking
-    (flycheck-grammarly--reset-request)
-    (grammarly-check-text (buffer-string)))
+  (flycheck-grammarly--grammar-check)
   (funcall
    callback 'finished
    (flycheck-increment-error-columns
