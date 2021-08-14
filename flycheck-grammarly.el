@@ -7,7 +7,7 @@
 ;; Description: Grammarly support for Flycheck.
 ;; Keyword: grammar check
 ;; Version: 0.2.3
-;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.3.0"))
+;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.3.0") (s "1.12.0"))
 ;; URL: https://github.com/emacs-grammarly/flycheck-grammarly
 
 ;; This file is NOT part of GNU Emacs.
@@ -38,6 +38,7 @@
 
 (require 'flycheck)
 (require 'grammarly)
+(require 's)
 
 (defgroup flycheck-grammarly nil
   "Grammarly support for Flycheck."
@@ -55,6 +56,12 @@
   "How long do we call request after we done typing."
   :type 'float
   :group 'flycheck-grammarly)
+
+(defconst flycheck-grammarly--avoidance-rule
+  '((":" . "\n"))
+  "Replace character to another character to avoid from Grammarly API.
+
+See #3.")
 
 (defvar flycheck-grammarly--show-debug-message nil
   "Show the debug message from this package.")
@@ -185,11 +192,17 @@
               check-list)))
     check-list))
 
+(defun flycheck-grammarly--apply-avoidance-rule (str)
+  "Apply avoidance rule to STR."
+  (dolist (rule flycheck-grammarly--avoidance-rule)
+    (setq str (s-replace (car rule) (cdr rule) str)))
+  str)
+
 (defun flycheck-grammarly--grammar-check ()
   "Grammar check once."
   (unless flycheck-grammarly--done-checking
     (flycheck-grammarly--reset-request)
-    (grammarly-check-text (buffer-string))))
+    (grammarly-check-text (flycheck-grammarly--apply-avoidance-rule (buffer-string)))))
 
 (defun flycheck-grammarly--start (checker callback)
   "Flycheck start function for CHECKER, invoking CALLBACK."
