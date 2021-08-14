@@ -57,11 +57,10 @@
   :type 'float
   :group 'flycheck-grammarly)
 
+;; For #3
 (defconst flycheck-grammarly--avoidance-rule
   '((":" . "\n"))
-  "Replace character to another character to avoid from Grammarly API.
-
-See #3.")
+  "Replace character to another character to avoid from Grammarly API.")
 
 (defvar flycheck-grammarly--show-debug-message nil
   "Show the debug message from this package.")
