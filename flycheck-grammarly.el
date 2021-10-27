@@ -121,9 +121,9 @@
 (defun flycheck-grammarly--reset-request ()
   "Reset some variables so the next time the user done typing can reuse."
   (flycheck-grammarly--debug-message "[INFO] Reset grammarly requests!")
-  (setq flycheck-grammarly--last-buffer-string (buffer-string))
-  (setq flycheck-grammarly--point-data '())
-  (setq flycheck-grammarly--done-checking nil))
+  (setq flycheck-grammarly--last-buffer-string (buffer-string)
+        flycheck-grammarly--point-data '()
+        flycheck-grammarly--done-checking nil))
 
 (defun flycheck-grammarly--after-change-functions (&rest _)
   "After change function to check if content change."
