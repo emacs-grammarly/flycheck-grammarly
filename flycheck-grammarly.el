@@ -68,7 +68,7 @@
 (defvar-local flycheck-grammarly--done-checking nil
   "Check if Grammarly API done checking.")
 
-(defvar-local flycheck-grammarly--point-data '()
+(defvar-local flycheck-grammarly--point-data nil
   "List of error/warning JSON data.")
 
 (defvar-local flycheck-grammarly--last-buffer-string nil
@@ -122,7 +122,7 @@
   "Reset some variables so the next time the user done typing can reuse."
   (flycheck-grammarly--debug-message "[INFO] Reset grammarly requests!")
   (setq flycheck-grammarly--last-buffer-string (buffer-string)
-        flycheck-grammarly--point-data '()
+        flycheck-grammarly--point-data nil
         flycheck-grammarly--done-checking nil))
 
 (defun flycheck-grammarly--after-change-functions (&rest _)
@@ -175,7 +175,7 @@
 
 (defun flycheck-grammarly--check-all ()
   "Check grammar for buffer document."
-  (let ((check-list '()))
+  (let (check-list)
     (dolist (data flycheck-grammarly--point-data)
       (let* ((pt-beg (flycheck-grammarly--grab-info data "highlightBegin"))
              (pt-end (flycheck-grammarly--grab-info data "highlightEnd"))
@@ -187,8 +187,7 @@
              (desc (flycheck-grammarly--html-to-text (or exp card-desc "")))
              (type (if exp (if (string-match-p "error" data) 'error 'warning) 'info)))
         (setq desc (flycheck-grammarly--valid-description desc))
-        (push (list ln col-start type desc :end-column col-end)
-              check-list)))
+        (push (list ln col-start type desc :end-column col-end) check-list)))
     check-list))
 
 (defun flycheck-grammarly--apply-avoidance-rule (str)
