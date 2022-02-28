@@ -13,12 +13,13 @@
   <img src="./etc/screenshot.png" width="656" height="238"/>
 <p>
 
-## Usage
+## 🔨 Usage
 
 To enable this package, simply add loading to your config like the code below.
 
 ```el
-(require 'flycheck-grammarly)
+(with-eval-after-load 'flycheck
+  (flycheck-grammarly-setup))
 ```
 
 If you encounter the performance issue, try raise `flycheck-grammarly-check-time` higher.

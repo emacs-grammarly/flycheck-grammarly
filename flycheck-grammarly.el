@@ -224,10 +224,14 @@
   :start #'flycheck-grammarly--start
   :modes flycheck-grammarly-active-modes)
 
-(add-to-list 'flycheck-checkers 'grammarly)
-(add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
-(add-to-list 'grammarly-on-message-function-list 'flycheck-grammarly--on-message)
-(add-to-list 'grammarly-on-close-function-list 'flycheck-grammarly--on-close)
+;;;###autoload
+(defun flycheck-grammarly-setup ()
+  "Setup flycheck-package."
+  (interactive)
+  (add-to-list 'flycheck-checkers 'grammarly)
+  (add-to-list 'grammarly-on-open-function-list 'flycheck-grammarly--on-open)
+  (add-to-list 'grammarly-on-message-function-list 'flycheck-grammarly--on-message)
+  (add-to-list 'grammarly-on-close-function-list 'flycheck-grammarly--on-close))
 
 (provide 'flycheck-grammarly)
 ;;; flycheck-grammarly.el ends here
