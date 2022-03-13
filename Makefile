@@ -12,9 +12,7 @@ TEST-FILES := $(shell ls test/flycheck-grammarly-*.el)
 ci: clean build compile
 
 build:
-	EMACS=$(EMACS) $(CASK) install
-	EMACS=$(EMACS) $(CASK) build
-	EMACS=$(EMACS) $(CASK) clean-elc
+	$(CASK) install
 
 compile:
 	@echo "Compiling..."

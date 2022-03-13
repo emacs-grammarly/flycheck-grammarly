@@ -58,7 +58,7 @@ jobs:
 
             - uses: cask/setup-cask@master
               with:
-                  version: '0.8.6'
+                  version: 'snapshot'
 
             - name: Run tests
               run:
