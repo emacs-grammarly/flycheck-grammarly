@@ -1,0 +1,17 @@
+# doc
+
+The player will try to go through the maze, the level itself should
+bring player confusion and surprise while player walks through the
+level. The story can be anything related to the player have to walk
+through the level. For instance, a firefighter (player) have to arrive
+the destination (goal) to save people. The game itself should be the
+tone of freedom.
+
+## Test Header
+
+The player will try to go through the maze, the level itself should
+bring player confusion and surprise while player walks through the
+level. The story can be anything related to the player have to walk
+through the level. For instance, a firefighter (player) have to arrive
+the destination (goal) to save people. The game itself should be the
+tone of freedom.
