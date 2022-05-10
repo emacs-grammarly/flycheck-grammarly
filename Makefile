@@ -23,7 +23,7 @@ compile:
 
 test:
 	@echo "Testing..."
-	$(EASK) exec ert-runner -L . $(LOAD-TEST-FILES) -t '!no-win' -t '!org'
+	$(EASK) ert ./test/*.el
 
 clean:
-	rm -rf .eask *.elc
+	$(EASK) clean-all
