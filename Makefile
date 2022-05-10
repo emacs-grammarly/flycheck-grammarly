@@ -23,5 +23,13 @@ test:
 	@echo "Testing..."
 	$(EASK) ert ./test/*.el
 
+checkdoc:
+	@echo "Run checkdoc..."
+	$(EASK) checkdoc
+
+lint:
+	@echo "Run package-lint..."
+	$(EASK) lint
+
 clean:
 	$(EASK) clean-all
