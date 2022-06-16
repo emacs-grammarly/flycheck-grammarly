@@ -2,7 +2,7 @@
          "0.2.3"
          "Grammarly support for Flycheck")
 
-(website-url "https://github.com/emacs-grammarly/flymake-grammarly")
+(website-url "https://github.com/emacs-grammarly/flycheck-grammarly")
 (keywords "grammar" "check")
 
 (package-file "flycheck-grammarly.el")
