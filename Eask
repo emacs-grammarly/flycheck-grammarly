@@ -3,7 +3,7 @@
          "Grammarly support for Flycheck")
 
 (website-url "https://github.com/emacs-grammarly/flycheck-grammarly")
-(keywords "grammar" "check")
+(keywords "convenience" "grammar" "check")
 
 (package-file "flycheck-grammarly.el")
 
