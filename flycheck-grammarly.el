@@ -131,15 +131,14 @@
            (flycheck-grammarly--minified-string (buffer-string)))
     (flycheck-grammarly--kill-timer)
     (setq flycheck-grammarly--request-timer
-          (run-with-timer flycheck-grammarly-check-time nil
-                          'flycheck-grammarly--reset-request))))
+          (run-with-idle-timer flycheck-grammarly-check-time nil
+                               'flycheck-grammarly--reset-request))))
 
 (defun flycheck-grammarly--encode-char (char-code)
   "Turn CHAR-CODE to character string."
   (cl-case char-code
     (4194208 (cons " " 2))
-    (4194201 (cons "'" 3))
-    (t nil)))
+    (4194201 (cons "'" 3))))
 
 (defun flycheck-grammarly--html-to-text (html)
   "Turn HTML to text."
@@ -176,11 +175,12 @@
   "Check grammar for buffer document."
   (let (check-list)
     (dolist (data flycheck-grammarly--point-data)
-      (let* ((pt-beg (flycheck-grammarly--grab-info data "highlightBegin"))
-             (pt-end (flycheck-grammarly--grab-info data "highlightEnd"))
-             (ln (line-number-at-pos (1+ pt-beg)))
-             (col-start (flycheck-grammarly--column-at-pos (1+ pt-beg)))
-             (col-end (flycheck-grammarly--column-at-pos (1+ pt-end)))
+      (let* ((offset (point-min))  ; narrowed buffer
+             (pt-beg (+ offset (flycheck-grammarly--grab-info data "highlightBegin")))
+             (pt-end (+ offset (flycheck-grammarly--grab-info data "highlightEnd")))
+             (ln (line-number-at-pos pt-beg t))
+             (col-start (flycheck-grammarly--column-at-pos pt-beg))
+             (col-end (flycheck-grammarly--column-at-pos pt-end))
              (exp (flycheck-grammarly--grab-info data "explanation"))
              (card-desc (unless exp (flycheck-grammarly--grab-info data "cardLayout groupDescription")))
              (desc (flycheck-grammarly--html-to-text (or exp card-desc "")))
