@@ -8,7 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## 0.2.4 (Unreleased)
 > Released N/A
 
-* N/A
+* Handle narrowed buffers (#13 and #15)
 
 ## 0.2.3
 > Released Oct 28, 2020
