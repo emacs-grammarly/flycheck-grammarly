@@ -138,8 +138,7 @@
   "Turn CHAR-CODE to character string."
   (cl-case char-code
     (4194208 (cons " " 2))
-    (4194201 (cons "'" 3))
-    (t nil)))
+    (4194201 (cons "'" 3))))
 
 (defun flycheck-grammarly--html-to-text (html)
   "Turn HTML to text."
@@ -175,18 +174,20 @@
 (defun flycheck-grammarly--check-all ()
   "Check grammar for buffer document."
   (let (check-list)
-    (dolist (data flycheck-grammarly--point-data)
-      (let* ((pt-beg (flycheck-grammarly--grab-info data "highlightBegin"))
-             (pt-end (flycheck-grammarly--grab-info data "highlightEnd"))
-             (ln (line-number-at-pos (1+ pt-beg)))
-             (col-start (flycheck-grammarly--column-at-pos (1+ pt-beg)))
-             (col-end (flycheck-grammarly--column-at-pos (1+ pt-end)))
-             (exp (flycheck-grammarly--grab-info data "explanation"))
-             (card-desc (unless exp (flycheck-grammarly--grab-info data "cardLayout groupDescription")))
-             (desc (flycheck-grammarly--html-to-text (or exp card-desc "")))
-             (type (if exp (if (string-match-p "error" data) 'error 'warning) 'info)))
-        (setq desc (flycheck-grammarly--valid-description desc))
-        (push (list ln col-start type desc :end-column col-end) check-list)))
+    (save-restriction
+      (widen)
+      (dolist (data flycheck-grammarly--point-data)
+        (let* ((pt-beg (flycheck-grammarly--grab-info data "highlightBegin"))
+               (pt-end (flycheck-grammarly--grab-info data "highlightEnd"))
+               (ln (line-number-at-pos (1+ pt-beg)))
+               (col-start (flycheck-grammarly--column-at-pos (1+ pt-beg)))
+               (col-end (flycheck-grammarly--column-at-pos (1+ pt-end)))
+               (exp (flycheck-grammarly--grab-info data "explanation"))
+               (card-desc (unless exp (flycheck-grammarly--grab-info data "cardLayout groupDescription")))
+               (desc (flycheck-grammarly--html-to-text (or exp card-desc "")))
+               (type (if exp (if (string-match-p "error" data) 'error 'warning) 'info)))
+          (setq desc (flycheck-grammarly--valid-description desc))
+          (push (list ln col-start type desc :end-column col-end) check-list))))
     check-list))
 
 (defun flycheck-grammarly--apply-avoidance-rule (str)
