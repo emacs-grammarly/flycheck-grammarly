@@ -6,7 +6,7 @@
 ;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/emacs-grammarly/flycheck-grammarly
 ;; Version: 0.2.3
-;; Package-Requires: ((emacs "25.1") (flycheck "0.14") (grammarly "0.3.0") (s "1.12.0"))
+;; Package-Requires: ((emacs "27.1") (flycheck "0.14") (grammarly "0.3.0") (s "1.12.0"))
 ;; Keywords: convenience grammar check
 
 ;; This file is NOT part of GNU Emacs.
