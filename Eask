@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "flycheck-grammarly"
          "0.2.3"
          "Grammarly support for Flycheck")
